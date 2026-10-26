@@ -1,0 +1,65 @@
+{
+  "configuracion": {
+    "simulaciones_por_alternativa": 300,
+    "semilla": 42,
+    "python": "3.12.14",
+    "sha256_motor": "79b15d6fb2208421f5486abcd679e126d576fefcd67c6c071f21d2e60afe1b2a"
+  },
+  "rondas": 13,
+  "jugadores": [
+    {
+      "nombre": "Jugador 1",
+      "categorias": {
+        "ones": 2,
+        "twos": 0,
+        "threes": 6,
+        "fours": 8,
+        "fives": 10,
+        "sixes": 6,
+        "threeOfKind": 27,
+        "fourOfKind": 0,
+        "fullHouse": 25,
+        "smallStraight": 30,
+        "largeStraight": 40,
+        "yahtzee": 0,
+        "chance": 21
+      },
+      "subtotal_superior": 32,
+      "bono_superior": 0,
+      "bonos_yahtzee": 0,
+      "total": 175
+    },
+    {
+      "nombre": "Jugador 2",
+      "categorias": {
+        "ones": 3,
+        "twos": 4,
+        "threes": 6,
+        "fours": 4,
+        "fives": 15,
+        "sixes": 18,
+        "threeOfKind": 28,
+        "fourOfKind": 14,
+        "fullHouse": 25,
+        "smallStraight": 30,
+        "largeStraight": 40,
+        "yahtzee": 0,
+        "chance": 24
+      },
+      "subtotal_superior": 50,
+      "bono_superior": 0,
+      "bonos_yahtzee": 0,
+      "total": 211
+    }
+  ],
+  "ganador": "Jugador 2",
+  "dados_lanzados": 244,
+  "frecuencias": {
+    "1": 45,
+    "2": 37,
+    "3": 46,
+    "4": 42,
+    "5": 29,
+    "6": 45
+  }
+}

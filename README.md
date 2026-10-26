@@ -25,6 +25,8 @@ En la segunda etapa completé la puntuación clásica y amplié las pruebas a 19
 - `simulacion_01.ipynb`: cuaderno base del profe, sin modificaciones.
 - `yahtzee.py`: versión del juego sobre la que estoy desarrollando la actividad.
 - `test_yahtzee.py`: pruebas de puntuación base, decisiones, configuración y registro de lanzamientos.
+- `generar_evidencias.py`: ejecuta y guarda la partida utilizada como evidencia.
+- `resultados/`: detalle de turnos, resumen de la partida y registro de pruebas.
 - `.gitignore`: evita incluir archivos temporales y entornos locales.
 
 ## Cómo ejecutarlo
@@ -51,7 +53,30 @@ python -m unittest -v test_yahtzee
 
 `--sims` define cuántas simulaciones se realizan por alternativa. `--seed` fija la semilla para repetir una partida con la misma configuración. Si cambia la cantidad de simulaciones, también cambia el consumo de números aleatorios; por eso, mantener la semilla no asegura las mismas tiradas entre configuraciones distintas.
 
-En la prueba de esta etapa, con 30 simulaciones y semilla 42, el jugador 1 obtuvo 148 puntos y el jugador 2 obtuvo 203. Se registraron 251 dados lanzados. Son resultados de comprobación de la versión actual; los resultados para el informe se obtendrán cuando esté terminado el programa.
+## Resultados de la ejecución
+
+Para la evidencia de la EA1 ejecuté el programa con **300 simulaciones por alternativa y semilla 42**, usando Python 3.12.14. Repetí la ejecución con la misma configuración y obtuve los mismos resultados y turnos.
+
+| Resultado | Jugador 1 | Jugador 2 |
+| --- | ---: | ---: |
+| Puntuación total | 175 | 211 |
+| Subtotal de la sección superior | 32 | 50 |
+| Bonificación superior | 0 | 0 |
+| Bonificaciones por Yahtzee | 0 | 0 |
+
+Ganó el jugador 2 por 36 puntos. Ambos completaron sus trece categorías y se registraron **244 dados realmente lanzados**, sin incluir los escenarios internos de Montecarlo. En esta partida no se activaron bonificaciones; esos casos sí se comprobaron en las pruebas.
+
+Un ejemplo aparece en el primer turno del jugador 1: empezó con `[6, 1, 1, 6, 3]`, conservó los dos seis y terminó con `[6, 6, 5, 6, 4]`. Anotó 27 puntos en trío. El detalle permite seguir qué dados decidió conservar en cada lanzamiento.
+
+Esta partida muestra el funcionamiento del programa. No demuestra que una cantidad de simulaciones sea mejor que otra ni que la estrategia sea óptima. Las frecuencias de las caras tampoco tienen que ser exactamente iguales en una muestra de 244 dados.
+
+Para volver a generar los archivos de evidencia:
+
+```bash
+python generar_evidencias.py --sims 300 --seed 42
+```
+
+Este comando reemplaza `resultados/partida.txt` y `resultados/resumen.json` con la nueva ejecución. El resumen registra la configuración, la versión de Python y la huella SHA-256 del archivo del motor utilizado. `resultados/pruebas.txt` conserva el registro de las 19 pruebas satisfactorias de esta etapa; se pueden volver a ejecutar con el comando de pruebas indicado arriba.
 
 ## Reglas de puntuación
 
@@ -68,7 +93,7 @@ Referencia para estas reglas: [instrucciones de Hasbro](https://www.hasbro.com/c
 
 ## Qué falta
 
-Obtener y guardar las evidencias de ejecución para completar los resultados y las conclusiones del Word, y preparar la demostración del video. Las comprobaciones del programa ya incluyen las bonificaciones y reglas especiales.
+Completar el Word con estas evidencias y preparar la demostración del video. El código, las instrucciones y los resultados de ejecución ya están disponibles en el repositorio.
 
 ## Sobre el cuaderno de clase
 

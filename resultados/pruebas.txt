@@ -1,0 +1,26 @@
+Comando: python -m unittest -v test_yahtzee
+
+test_bonus_superior_umbral_y_no_se_duplica (test_yahtzee.TestMotor.test_bonus_superior_umbral_y_no_se_duplica) ... ok
+test_categoria_no_se_repite (test_yahtzee.TestMotor.test_categoria_no_se_repite) ... ok
+test_comodin_categorias_inferiores (test_yahtzee.TestMotor.test_comodin_categorias_inferiores) ... ok
+test_comodin_sin_inferiores_anota_cero (test_yahtzee.TestMotor.test_comodin_sin_inferiores_anota_cero) ... ok
+test_configuracion_se_actualiza_y_se_propaga (test_yahtzee.TestMotor.test_configuracion_se_actualiza_y_se_propaga) ... ok
+test_conservar_mano_maxima (test_yahtzee.TestMotor.test_conservar_mano_maxima) ... ok
+test_dados_conservados_no_se_cuentan (test_yahtzee.TestMotor.test_dados_conservados_no_se_cuentan) ... ok
+test_decision_valora_bonus_superior (test_yahtzee.TestMotor.test_decision_valora_bonus_superior) ... ok
+test_estimador_incluye_bonos_sin_alterar_jugador (test_yahtzee.TestMotor.test_estimador_incluye_bonos_sin_alterar_jugador) ... ok
+test_marcador_empate (test_yahtzee.TestMotor.test_marcador_empate) ... ok
+test_numero_real_de_simulaciones (test_yahtzee.TestMotor.test_numero_real_de_simulaciones) ... ok
+test_partida_completa_reproducible (test_yahtzee.TestMotor.test_partida_completa_reproducible) ... ok
+test_puntuaciones_base (test_yahtzee.TestMotor.test_puntuaciones_base) ... ok
+test_rechaza_simulaciones_invalidas (test_yahtzee.TestMotor.test_rechaza_simulaciones_invalidas) ... ok
+test_sin_yahtzee_previo_no_hay_comodin (test_yahtzee.TestMotor.test_sin_yahtzee_previo_no_hay_comodin) ... ok
+test_tres_tiradas_como_maximo (test_yahtzee.TestMotor.test_tres_tiradas_como_maximo) ... ok
+test_ultimo_lanzamiento_evalua_futuro (test_yahtzee.TestMotor.test_ultimo_lanzamiento_evalua_futuro) ... ok
+test_yahtzee_adicional_obliga_superior (test_yahtzee.TestMotor.test_yahtzee_adicional_obliga_superior) ... ok
+test_yahtzee_en_cero_permite_comodin_sin_bono (test_yahtzee.TestMotor.test_yahtzee_en_cero_permite_comodin_sin_bono) ... ok
+
+----------------------------------------------------------------------
+Ran 19 tests in 0.332s
+
+OK
