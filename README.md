@@ -18,7 +18,7 @@ Conservé el cuaderno original y organicé el código del juego en `yahtzee.py` 
 
 La estrategia evalúa el siguiente lanzamiento y vuelve a tomar una decisión después de cada tirada real. Es una aproximación de un paso; no garantiza la mejor puntuación de toda la partida.
 
-También quedaron nueve pruebas de funcionamiento. Todas pasaron, incluida una partida completa con dos jugadores y trece turnos por jugador.
+En la segunda etapa completé la puntuación clásica y amplié las pruebas a 19. Todas pasaron, incluida una partida completa con dos jugadores y trece turnos por jugador. El marcador ahora separa los puntos por categoría y las bonificaciones.
 
 ## Archivos
 
@@ -53,11 +53,22 @@ python -m unittest -v test_yahtzee
 
 En la prueba de esta etapa, con 30 simulaciones y semilla 42, el jugador 1 obtuvo 148 puntos y el jugador 2 obtuvo 203. Se registraron 251 dados lanzados. Son resultados de comprobación de la versión actual; los resultados para el informe se obtendrán cuando esté terminado el programa.
 
+## Reglas de puntuación
+
+La versión actual incluye las trece categorías del cuaderno y las reglas que faltaban para el juego clásico:
+
+- Bono de 35 puntos al alcanzar 63 o más en la sección superior.
+- Bono de 100 por cada Yahtzee adicional si la casilla Yahtzee ya tiene 50.
+- Con la casilla Yahtzee ocupada, cinco dados iguales deben anotarse primero en la categoría superior correspondiente si está libre. Si está ocupada, se usa una categoría inferior disponible como comodín. Si tampoco quedan categorías inferiores, se registra cero en una superior libre.
+- Si Yahtzee se había anotado con cero, aplica el comodín pero no el bono de 100.
+
+Montecarlo evalúa los puntos que se sumarían al total, incluidos los bonos inmediatos, sin modificar la hoja del jugador durante las simulaciones. Las pruebas verifican estos casos aunque no aparezcan en una partida particular.
+
+Referencia para estas reglas: [instrucciones de Hasbro](https://www.hasbro.com/common/instruct/yahtzee.pdf) y [aclaración de Hasbro sobre Yahtzee adicional y comodín](https://hasbro-apac-eng.custhelp.com/app/answers/detail/a_id/975/).
+
 ## Qué falta
 
-La consigna habla de Yahtzee clásico. Antes de cerrar el juego falta revisar y completar las bonificaciones y la regla de comodín, que no están implementadas en el cuaderno base. Esto responde al alcance de juego clásico; no es una indicación adicional del profe.
-
-Después se comprobará la versión completa y se obtendrán las evidencias para los resultados y las conclusiones de la EA1.
+Obtener y guardar las evidencias de ejecución para completar los resultados y las conclusiones del Word, y preparar la demostración del video. Las comprobaciones del programa ya incluyen las bonificaciones y reglas especiales.
 
 ## Sobre el cuaderno de clase
 

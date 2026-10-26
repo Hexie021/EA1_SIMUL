@@ -1,5 +1,5 @@
 """Motor derivado del cuaderno de clase de Julián Andrés Loaiza López.
-Etapa 1: correcciones de Montecarlo; bonificaciones clásicas pendientes.
+Reglas clásicas con bonificaciones y comodín; estrategia Montecarlo de un paso.
 """
 
 import random
@@ -85,6 +85,7 @@ class PlayerState:
     name: str
     scores: Dict[str, Optional[int]] = field(default_factory=lambda: {c: None for c in CATEGORIES_ORDER})
     total: int = 0
+    yahtzee_bonus: int = 0
 
     def available_categories(self) -> List[str]:
         return [c for c,v in self.scores.items() if v is None]
@@ -93,7 +94,63 @@ class PlayerState:
         if category not in self.scores or self.scores[category] is not None:
             raise ValueError("La categoría no existe o ya fue utilizada")
         self.scores[category] = points
-        self.total = sum(v for v in self.scores.values() if v is not None)
+        self.refresh_total()
+
+    @property
+    def upper_subtotal(self) -> int:
+        return sum(self.scores[c] or 0 for c in CATEGORIES_ORDER[:6])
+
+    @property
+    def upper_bonus(self) -> int:
+        return 35 if self.upper_subtotal >= 63 else 0
+
+    def refresh_total(self) -> None:
+        self.total = sum(v or 0 for v in self.scores.values()) + self.upper_bonus + self.yahtzee_bonus
+
+    def scoring_options(self, dice: List[int]) -> Dict[str, int]:
+        """Puntos por categoría legal, sin modificar la hoja del jugador."""
+        if len(dice) != 5 or any(type(v) is not int or not 1 <= v <= 6 for v in dice):
+            raise ValueError("Se necesitan cinco dados con valores de 1 a 6")
+        available = self.available_categories()
+        joker = len(set(dice)) == 1 and self.scores['yahtzee'] is not None
+        if joker:
+            matching = CATEGORIES_ORDER[dice[0] - 1]
+            if matching in available:
+                return {matching: sum(dice)}
+            lower = [c for c in available if c in CATEGORIES_ORDER[6:]]
+            if lower:
+                fixed = {'fullHouse': 25, 'smallStraight': 30, 'largeStraight': 40}
+                return {c: fixed.get(c, sum(dice)) for c in lower}
+            return {c: 0 for c in available}
+        return {c: score_hand(c, dice) for c in available}
+
+    def extra_yahtzee(self, dice: List[int]) -> int:
+        return 100 if len(set(dice)) == 1 and self.scores['yahtzee'] == 50 else 0
+
+    def score_gain(self, category: str, points: int, dice: List[int]) -> int:
+        """Incremento inmediato del total, incluida una bonificación nueva."""
+        upper_gain = 0
+        if category in CATEGORIES_ORDER[:6] and self.upper_subtotal < 63 <= self.upper_subtotal + points:
+            upper_gain = 35
+        return points + upper_gain + self.extra_yahtzee(dice)
+
+    def best_option(self, dice: List[int]) -> Tuple[str, int]:
+        options = self.scoring_options(dice)
+        if not options:
+            raise ValueError("No quedan categorías disponibles")
+        category = max(options, key=lambda c: self.score_gain(c, options[c], dice))
+        return category, self.score_gain(category, options[category], dice)
+
+    def record_hand(self, category: str, dice: List[int]) -> int:
+        options = self.scoring_options(dice)
+        if category not in options:
+            raise ValueError("La categoría no es legal para esta mano")
+        previous_total = self.total
+        bonus = self.extra_yahtzee(dice)
+        self.set_score(category, options[category])
+        self.yahtzee_bonus += bonus
+        self.refresh_total()
+        return self.total - previous_total
 
 @dataclass
 class GameStats:
@@ -138,7 +195,7 @@ def all_keep_masks() -> List[List[bool]]:
 
 def simulate_expected_value_after_keeps(
     current_values: List[int], keep_mask: List[bool], rolls_remaining: int,
-    available_categories: List[str], sims: int
+    available_categories: List[str], sims: int, player: Optional[PlayerState] = None
 ) -> float:
     """Promedio de la mejor puntuación tras UN nuevo lanzamiento.
 
@@ -148,18 +205,19 @@ def simulate_expected_value_after_keeps(
     if not isinstance(sims, int) or isinstance(sims, bool) or sims <= 0:
         raise ValueError("El número de simulaciones debe ser un entero positivo")
     if rolls_remaining <= 0 or all(keep_mask):
-        return float(best_category_score(current_values, available_categories)[1])
+        return float(player.best_option(current_values)[1] if player is not None else best_category_score(current_values, available_categories)[1])
     total = 0
     for _ in range(sims):
         values = current_values[:]
         roll_dice(values, keep_mask)
-        total += best_category_score(values, available_categories)[1]
+        total += player.best_option(values)[1] if player is not None else best_category_score(values, available_categories)[1]
     return total / sims
 
 
 def choose_keep_mask_montecarlo(
     current_values: List[int], rolls_remaining: int,
-    available_categories: List[str], sims_per_mask: Optional[int] = None
+    available_categories: List[str], sims_per_mask: Optional[int] = None,
+    player: Optional[PlayerState] = None
 ) -> List[bool]:
     """Evalúa 32 alternativas; en empates prefiere conservar más dados."""
     sims = SIMS_PER_MASK if sims_per_mask is None else sims_per_mask
@@ -172,7 +230,7 @@ def choose_keep_mask_montecarlo(
     best_mask, best_ev = None, -1.0
     for mask in all_keep_masks():
         ev = simulate_expected_value_after_keeps(
-            current_values, mask, rolls_remaining, available_categories, sims
+            current_values, mask, rolls_remaining, available_categories, sims, player
         )
         if ev > best_ev or (ev == best_ev and sum(mask) > sum(best_mask)):
             best_ev, best_mask = ev, mask
@@ -194,7 +252,7 @@ def play_one_turn(state: GameState, verbose: bool = True, sims_per_mask: Optiona
     # Hasta 2 rerolls con estrategia MC
     while state.rolls_left > 0:
         keep_mask = choose_keep_mask_montecarlo(
-            state.dice_values, state.rolls_left, player.available_categories(), sims_per_mask
+            state.dice_values, state.rolls_left, player.available_categories(), sims_per_mask, player
         )
 
         # Si la máscara "keep_mask" implica mantener todo tal cual (keep 5), podemos decidir plantarnos:
@@ -214,8 +272,8 @@ def play_one_turn(state: GameState, verbose: bool = True, sims_per_mask: Optiona
             print(f"{player.name} — Tirada {tirada_num}:", state.dice_values, "| keep:", keep_mask)
 
     # Elegir mejor categoría disponible para la mano final
-    cat, sc = best_category_score(state.dice_values, player.available_categories())
-    player.set_score(cat, sc)
+    cat, _ = player.best_option(state.dice_values)
+    sc = player.record_hand(cat, state.dice_values)
     if verbose:
         print(f"{player.name} elige categoría '{cat}' y anota {sc} puntos. Total = {player.total}")
 
@@ -243,6 +301,9 @@ def print_scoreboard(state: GameState):
         for cat in CATEGORIES_ORDER:
             v = p.scores[cat]
             print(f"  - {cat:13s}: {v if v is not None else 0}")
+        print(f"  Subtotal superior: {p.upper_subtotal}")
+        print(f"  Bono superior: {p.upper_bonus}")
+        print(f"  Bonos Yahtzee: {p.yahtzee_bonus}")
     # Ganador
     if state.players[0].total > state.players[1].total:
         winner = state.players[0].name
