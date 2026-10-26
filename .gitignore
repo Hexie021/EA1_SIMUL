@@ -1,0 +1,25 @@
+# Python y entornos locales
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Configuración local y credenciales
+.env
+.env.*
+!.env.example
+.vscode/
+.idea/
+
+# Archivos temporales
+~$*
+*.tmp
+*.log
+.DS_Store
+Thumbs.db
+work/
