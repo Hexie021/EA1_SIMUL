@@ -25,6 +25,7 @@ En la segunda etapa completé la puntuación clásica y amplié las pruebas a 19
 - `simulacion_01.ipynb`: cuaderno base del profe, sin modificaciones.
 - `yahtzee.py`: versión del juego sobre la que estoy desarrollando la actividad.
 - `test_yahtzee.py`: pruebas de puntuación base, decisiones, configuración y registro de lanzamientos.
+- `analizar_convergencia.py`: compara la estabilidad de Montecarlo con una referencia exacta.
 - `generar_evidencias.py`: ejecuta y guarda la partida utilizada como evidencia.
 - `resultados/`: detalle de turnos, resumen de la partida y registro de pruebas.
 - `.gitignore`: evita incluir archivos temporales y entornos locales.
@@ -91,9 +92,44 @@ Montecarlo evalúa los puntos que se sumarían al total, incluidos los bonos inm
 
 Referencia para estas reglas: [instrucciones de Hasbro](https://www.hasbro.com/common/instruct/yahtzee.pdf) y [aclaración de Hasbro sobre Yahtzee adicional y comodín](https://hasbro-apac-eng.custhelp.com/app/answers/detail/a_id/975/).
 
+## USA, MODIFICA Y CREA
+
+**USA:** partí del cuaderno del profe y conservé el original como referencia del juego y del método de Montecarlo.
+
+**MODIFICA:** corregí la configuración de simulaciones, la decisión del último lanzamiento y el conteo de dados. Organicé el motor en un solo archivo y completé las reglas de puntuación.
+
+**CREA:** incorporé pruebas y archivos reproducibles de resultados. Amplié el estudio de convergencia de la guía: ahora repite las estimaciones con semillas distintas y las compara con un valor exacto, en lugar de tomar la última simulación como si fuera el valor verdadero.
+
+## Estabilidad y Ley de los Grandes Números
+
+Para separar la estabilidad de Montecarlo del resultado de una partida, fijé la mano `[3, 3, 5, 2, 6]`, conservé los dos tres y simulé un nuevo lanzamiento de los otros dados. Las categorías disponibles fueron treses, full house, trío y chance, como en el ejemplo del cuaderno. Comparé 10, 100, 1000 y 10000 simulaciones con 30 repeticiones por tamaño y semillas distintas.
+
+La referencia exacta es **3737/216 = 17,300926 puntos**. Se calculó recorriendo los 216 resultados ordenados y equiprobables de los tres dados. No es el resultado de una simulación más grande.
+
+| Simulaciones | Promedio estimado | Desviación entre repeticiones | Error absoluto medio |
+| ---: | ---: | ---: | ---: |
+| 10 | 17,4467 | 1,1085 | 0,9667 |
+| 100 | 17,3053 | 0,3640 | 0,2895 |
+| 1000 | 17,2968 | 0,1140 | 0,0877 |
+| 10000 | 17,2871 | 0,0382 | 0,0324 |
+
+La desviación muestra cuánto cambian las estimaciones entre repeticiones. El error absoluto medio mide su distancia promedio al valor exacto. Ambos disminuyeron al aumentar las simulaciones en este experimento.
+
+Bajo el supuesto de lanzamientos independientes y uniformes, estas puntuaciones tienen media y varianza finitas. La Ley de los Grandes Números explica que su promedio se aproxima a la esperanza al aumentar el tamaño de muestra. La varianza del promedio es la varianza de la puntuación dividida por N. Los resultados ilustran ese comportamiento; no prueban la ley ni garantizan una mejora en cada ejecución o más puntos en el juego. Por ejemplo, el promedio de 10000 quedó algo más lejos de la referencia que el de 1000, aunque la dispersión y el error absoluto medio fueron menores.
+
+Para reproducir el experimento:
+
+```bash
+python analizar_convergencia.py
+```
+
+El comando actualiza `resultados/convergencia.json` (incluye las 120 estimaciones y sus semillas) y `resultados/convergencia.md` (resumen). Utiliza el mismo evaluador Montecarlo del motor, con una decisión fija; no evalúa el efecto de escoger el máximo entre las 32 alternativas.
+
+Referencia teórica: [UC Berkeley, Stat 135, Consistency](https://stat135.berkeley.edu/fall-2026/Modules/14-Consistency.html).
+
 ## Qué falta
 
-Completar el Word con estas evidencias y preparar la demostración del video. El código, las instrucciones y los resultados de ejecución ya están disponibles en el repositorio.
+Preparar y grabar el video de máximo cinco minutos, mostrando el funcionamiento, las etapas USA, MODIFICA Y CREA y el análisis de estabilidad. El informe se entrega por separado.
 
 ## Sobre el cuaderno de clase
 
